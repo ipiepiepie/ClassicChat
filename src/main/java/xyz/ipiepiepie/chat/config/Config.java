@@ -18,6 +18,10 @@ public class Config {
 		toml.addEntry("Ping.Color", "color to highlight ping in chat (use 'reset' to get rid of color highlight)", "orange");
 		toml.addEntry("Ping.Sound", "sound, played to pinged player", "note.celesta");
 
+		// nick category //
+		toml.addCategory("Nickname");
+		toml.addEntry("Nickname.RemoveItalic", "remove italic formatting for changed via '/nick' command nicknames", true);
+
 		config = new TomlConfigHandler(modID, toml);
 	}
 
@@ -36,5 +40,10 @@ public class Config {
 		return config.getString("Ping.Color");
 	}
 
+	// NICKNAME //
+
+	public boolean shouldRemoveItalicFromNickname() {
+		return config.getBoolean("Nickname.RemoveItalic");
+	}
 
 }
