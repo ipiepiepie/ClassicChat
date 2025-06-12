@@ -1,38 +1,29 @@
 {
   "schemaVersion": 1,
-  "id": "examplemod",
+  "id": "classic_chat",
   "version": "${version}",
 
-  "name": "Example Mod",
+  "name": "Classic Chat",
   "description": "This mod aims to help new BTA modders.",
   "authors": [
-    "Turnip Labs"
+    "ipiepiepie"
   ],
   "contact": {
     "homepage": "",
-    "sources": ""
+    "sources": "https://github.com/ipiepiepie/ClassicChat"
   },
 
 	"icon": "icon.png",
-  "license": "CC0-1.0",
+  "license": "MIT",
 
   "environment": "*",
   "entrypoints": {
     "main": [
-			"turniplabs.examplemod.ExampleMod"
-    ],
-		"beforeGameStart": [
-			"turniplabs.examplemod.ExampleMod"
-		],
-		"afterGameStart": [
-			"turniplabs.examplemod.ExampleMod"
-		],
-		"recipesReady": [
-			"turniplabs.examplemod.ExampleMod"
-		]
+			"xyz.ipiepiepie.chat.ChatMod"
+    ]
 	},
   "mixins": [
-      "examplemod.mixins.json"
+		"chat.mixins.json"
   ],
 
   "depends": {
