@@ -32,8 +32,7 @@ public class Config {
 	}
 
 	public String getPingSound() {
-		//return config.getString("Ping.Sound");
-		return "note.harp";
+		return config.getString("Ping.Sound");
 	}
 
 	public String getPingColor() {

@@ -16,6 +16,9 @@ public class PingListener implements Listener {
 
 	@EventListener(priority = Priority.HIGH)
 	public void chatListener(PlayerChatEvent event) {
+		if (!ChatMod.CONFIG.isPingEnabled()) return;
+
+		// get sent message
 		String message = event.getMessage();
 		// fetch all @pings from message
 		Matcher matcher = Pattern.compile("@(\\w+)").matcher(message);
@@ -35,7 +38,8 @@ public class PingListener implements Listener {
 			if (player == null) continue;
 
 			// play ping sound to pinged player
-			player.world.playSoundAtEntity(player, player, ChatMod.CONFIG.getPingSound(), 1f, 1f);
+			assert player.world != null;
+			player.world.playSoundAtEntity(null, player, ChatMod.CONFIG.getPingSound(), 1f, 1f);
 
 			// format ping in message
 			message = message.replaceFirst(ping, TextFormatting.getColorFormatting(ChatMod.CONFIG.getPingColor()) + ping + TextFormatting.RESET);
