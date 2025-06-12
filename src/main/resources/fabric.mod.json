@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
-  "id": "classic_chat",
+  "id": "cchat",
   "version": "${version}",
 
   "name": "Classic Chat",
-  "description": "This mod aims to help new BTA modders.",
+  "description": "Old good multiplayer chat features.",
   "authors": [
     "ipiepiepie"
   ],
