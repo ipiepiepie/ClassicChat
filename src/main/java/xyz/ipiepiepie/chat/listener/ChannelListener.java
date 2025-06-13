@@ -14,7 +14,7 @@ public class ChannelListener implements Listener {
 
 	@EventListener(priority = Priority.LOWEST)
 	public void chatListener(PlayerChatEvent event) {
-		if (!ChatMod.CONFIG.isChannelsEnabled()) return;
+		if (!ChatMod.CONFIG.isChannelsEnabled() || event.isCancelled()) return;
 
 		Player player = event.player;
 		// get sent message
