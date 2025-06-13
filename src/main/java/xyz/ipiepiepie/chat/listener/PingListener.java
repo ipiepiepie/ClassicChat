@@ -5,10 +5,10 @@ import net.minecraft.core.net.command.TextFormatting;
 import net.minecraft.server.MinecraftServer;
 import org.useless.serverlibe.api.Listener;
 import org.useless.serverlibe.api.annotations.EventListener;
-import org.useless.serverlibe.api.enums.Priority;
 import org.useless.serverlibe.api.event.player.PlayerChatEvent;
 import xyz.ipiepiepie.chat.ChatManager;
 import xyz.ipiepiepie.chat.ChatMod;
+import xyz.ipiepiepie.chat.object.Channel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,7 @@ public class PingListener implements Listener {
 	public void chatListener(PlayerChatEvent event) {
 		if (!ChatMod.CONFIG.isPingEnabled()) return;
 
+		Player sender = event.player;
 		// get sent message
 		String message = event.getMessage();
 		// fetch all @pings from message
@@ -35,28 +36,34 @@ public class PingListener implements Listener {
 			// skip pinged players
 			if (pingedNames.contains(nickname)) continue;
 			// get player by its nickname
-			Player player = MinecraftServer.getInstance().playerList.playerEntities
+			Player receiver = MinecraftServer.getInstance().playerList.playerEntities
 				.stream()
 				.filter(p -> TextFormatting.removeAllFormatting(p.getDisplayName()).equalsIgnoreCase(TextFormatting.removeAllFormatting(nickname)))
 				.findFirst()
 				.orElse(null);
 
 			// skip current ping if there is no player
-			if (player == null) continue;
+			if (receiver == null) continue;
 
 			// check channels if enabled
 			if (ChatMod.CONFIG.isChannelsEnabled()) {
+				Channel channel = ChatManager.getInstance().getChannel(sender, message.replaceFirst(String.format("<%s§r> ", sender.getDisplayName()), ""));
+
 				// if we can't reach pinging player, then we can't ping them
-				if (!ChatManager.getInstance().getChannel(event.player).canHear(event.player, player)) {
+				if (!channel.canHear(sender, receiver)) {
 					message = message.replace(ping, TextFormatting.LIGHT_GRAY + ping + TextFormatting.RESET);
+					pingedNames.add(nickname);
+					continue;
+				// don't ping player if sender has cooldown in current channel
+				} else if (channel.hasCooldown(sender)) {
 					pingedNames.add(nickname);
 					continue;
 				}
 			}
 
 			// play ping sound to pinged player
-			assert player.world != null;
-			player.world.playSoundAtEntity(null, player, ChatMod.CONFIG.getPingSound(), 1f, 1f);
+			assert receiver.world != null;
+			receiver.world.playSoundAtEntity(null, receiver, ChatMod.CONFIG.getPingSound(), 1f, 1f);
 
 			// format ping in message
 			message = message.replace(ping, TextFormatting.getColorFormatting(ChatMod.CONFIG.getPingColor()) + ping + TextFormatting.RESET);

@@ -36,17 +36,12 @@ public class Channel {
 	 * @param message message text
 	 */
 	public void sendUnformattedMessage(Player sender, String message, boolean noAudienceNotification) {
-		Instant lastMessageTime = this.lastMessageTime.get(sender);
-
 		// cooldown check
-		if (lastMessageTime != null && cooldown > 0) {
-			long secondsFromLastMessage = Duration.between(Instant.now(), lastMessageTime).abs().getSeconds();
+		if (this.hasCooldown(sender)) {
+			Instant lastMessageTime = this.lastMessageTime.get(sender);
 
-			// prevent spamming
-			if (secondsFromLastMessage <= this.cooldown) {
-				sender.sendMessage(TextFormatting.RED + "Wait " + TextFormatting.WHITE + (this.cooldown - secondsFromLastMessage) + " seconds " + TextFormatting.RED + "before sending message in this channel!");
-				return;
-			}
+			sender.sendMessage(TextFormatting.RED + "Wait " + TextFormatting.WHITE + (this.cooldown - Duration.between(Instant.now(), lastMessageTime).abs().getSeconds()) + " seconds " + TextFormatting.RED + "before sending message in this channel!");
+			return;
 		}
 
 		// get audience for the message
@@ -61,7 +56,7 @@ public class Channel {
 			sender.sendMessage(TextFormatting.RED + "Nobody heard you");
 
 		// write current message for future cooldown
-		if (cooldown > 0) this.lastMessageTime.put(sender, Instant.now());
+		if (this.cooldown > 0) this.lastMessageTime.put(sender, Instant.now());
 	}
 
 	/**
@@ -71,6 +66,20 @@ public class Channel {
 	 */
 	public void sendMessage(Player sender, String message) {
 		this.sendUnformattedMessage(sender, format.replace("%player%", sender.getDisplayName()).replace("%message%", message), true);
+	}
+
+	public boolean hasCooldown(Player player) {
+		Instant lastMessageTime = this.lastMessageTime.get(player);
+
+		// cooldown check
+		if (lastMessageTime != null && cooldown > 0) {
+			long secondsFromLastMessage = Duration.between(Instant.now(), lastMessageTime).abs().getSeconds();
+
+			// prevent spamming
+			return secondsFromLastMessage <= this.cooldown;
+		}
+
+		return false;
 	}
 
 	/**
@@ -96,7 +105,7 @@ public class Channel {
 	 * @return {@code true} if they can hear each other, otherwise {@code false}
 	 */
 	public boolean canHear(Player first, Player second) {
-		if (distance <= 0) return true;
+		if (this.distance <= 0) return true;
 
 		// check if their distance doesn't exceed the limit
 		return first.distanceTo(second) <= this.distance;
