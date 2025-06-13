@@ -4,6 +4,7 @@
   "package": "xyz.ipiepiepie.chat.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MessageMixin"
   ],
   "client": [
   ],

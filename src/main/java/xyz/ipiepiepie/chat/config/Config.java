@@ -28,6 +28,12 @@ public class Config {
 		toml.addEntry("Channel.Local.Format", "<%player%§r> %message%");
 		toml.addEntry("Channel.Local.Distance", "chat distance in blocks", 200);
 
+		// messages category //
+
+		toml.addCategory("Message");
+		toml.addEntry("Message.Enable", "enable custom /msg command", true);
+		toml.addEntry("Message.Format", "format of /msg messages", "§1[%sender% -> %receiver%]§r %message%");
+
 		// ping category //
 		toml.addCategory("Ping");
 		toml.addEntry("Ping.Enable", "enable @ping feature", true);
@@ -46,26 +52,6 @@ public class Config {
 		toml.addEntry("Roleplay.EnableRoll", "enable /roll command", true);
 
 		config = new TomlConfigHandler(modID, toml);
-	}
-
-	// PING //
-
-	public boolean isPingEnabled() {
-		return config.getBoolean("Ping.Enable");
-	}
-
-	public String getPingSound() {
-		return Optional.of(config.getString("Ping.Sound")).orElse("reset");
-	}
-
-	public String getPingColor() {
-		return config.getString("Ping.Color");
-	}
-
-	// NICKNAME //
-
-	public boolean shouldRemoveItalicFromNickname() {
-		return config.getBoolean("Nickname.RemoveItalic");
 	}
 
 	// CHANNELS //
@@ -125,6 +111,36 @@ public class Config {
 			return config.getInt(path);
 		else
 			return -1;
+	}
+
+	// MESSAGE //
+
+	public boolean isMessagesEnabled() {
+		return config.getBoolean("Message.Enable");
+	}
+
+	public String getMessageFormat() {
+		return config.getString("Message.Format");
+	}
+
+	// PING //
+
+	public boolean isPingEnabled() {
+		return config.getBoolean("Ping.Enable");
+	}
+
+	public String getPingSound() {
+		return Optional.of(config.getString("Ping.Sound")).orElse("reset");
+	}
+
+	public String getPingColor() {
+		return config.getString("Ping.Color");
+	}
+
+	// NICKNAME //
+
+	public boolean shouldRemoveItalicFromNickname() {
+		return config.getBoolean("Nickname.RemoveItalic");
 	}
 
 	// ROLEPLAY //

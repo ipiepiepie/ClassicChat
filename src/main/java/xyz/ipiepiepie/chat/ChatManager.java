@@ -11,20 +11,21 @@ public class ChatManager {
 	// internal structures //
 	private Channel defaultChannel;
 	private final Map<String, Channel> channels = new HashMap<>();
-	private final Map<Player, Channel> playerChannels = new HashMap<>();
+	private final Map<UUID, Channel> playerChannels = new HashMap<>();
+	private final Map<UUID, UUID> lastConversation = new HashMap<>();
 
 	public static ChatManager getInstance() {
 		return instance;
 	}
 
-	/*================================================================================================*/
+	/*===========================================* CHANNEL *==========================================*/
 
 	/**
 	 * Reset {@link Channel} for {@link Player}.
 	 * @param player player to reset channel for
 	 */
 	public void resetChannel(Player player) {
-		this.playerChannels.remove(player);
+		this.playerChannels.remove(player.uuid);
 	}
 
 	/**
@@ -33,7 +34,7 @@ public class ChatManager {
 	 * @param channel some channel
 	 */
 	public void setChannel(Player player, Channel channel) {
-		this.playerChannels.put(player, channel);
+		this.playerChannels.put(player.uuid, channel);
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class ChatManager {
 	 * @return specific {@link Channel} if used, otherwise {@link #defaultChannel default channel}.
 	 */
 	public Channel getChannel(Player player) {
-		return playerChannels.getOrDefault(player, defaultChannel);
+		return playerChannels.getOrDefault(player.uuid, defaultChannel);
 	}
 
 	/**
@@ -79,6 +80,22 @@ public class ChatManager {
 	 */
 	public List<Channel> getChannels() {
 		return new ArrayList<>(channels.values());
+	}
+
+	/*===========================================* MESSAGE *==========================================*/
+
+	/**
+	 * Cache the latest /msg conversation for {@link Player Players}.
+	 * @param first the first player
+	 * @param second the second player
+	 */
+	public void setLastConversation(Player first, Player second) {
+		lastConversation.put(first.uuid, second.uuid);
+		lastConversation.put(second.uuid, first.uuid);
+	}
+
+	public UUID getLastConversation(Player player) {
+		return lastConversation.get(player.uuid);
 	}
 
 	/*============================================* LOAD *============================================*/
