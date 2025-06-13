@@ -31,11 +31,11 @@ public class Channel {
 	}
 
 	/**
-	 * Send message to the channel.
+	 * Send message without using {@link #format} to the channel.
 	 * @param sender sender of message
 	 * @param message message text
 	 */
-	public void sendMessage(Player sender, String message) {
+	public void sendUnformattedMessage(Player sender, String message, boolean noAudienceNotification) {
 		Instant lastMessageTime = this.lastMessageTime.get(sender);
 
 		// cooldown check
@@ -54,14 +54,23 @@ public class Channel {
 
 		// send message to the audience
 		for (Player receiver : audience)
-			receiver.sendMessage(format.replace("%player%", sender.getDisplayName()).replace("%message%", message));
+			receiver.sendMessage(message);
 
 		// notify player if no one can hear due to the channel distance limitations
-		if (audience.size() == 1 && this.distance > 0 && ChatMod.CONFIG.isNoAudienceNotificationEnabled()) // size == 1 since players can hear themselves :)
-			sender.sendMessage(TextFormatting.RED + "No one heard your message!");
+		if (audience.size() == 1 && this.distance > 0 && ChatMod.CONFIG.isNobodyHeardNotificationEnabled() && noAudienceNotification) // size == 1 since players can hear themselves :)
+			sender.sendMessage(TextFormatting.RED + "Nobody heard you");
 
 		// write current message for future cooldown
 		if (cooldown > 0) this.lastMessageTime.put(sender, Instant.now());
+	}
+
+	/**
+	 * Send message to the channel.
+	 * @param sender sender of message
+	 * @param message message text
+	 */
+	public void sendMessage(Player sender, String message) {
+		this.sendUnformattedMessage(sender, format.replace("%player%", sender.getDisplayName()).replace("%message%", message), true);
 	}
 
 	/**

@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.useless.serverlibe.ServerLibe;
 import xyz.ipiepiepie.chat.command.ChannelCommand;
+import xyz.ipiepiepie.chat.command.RollCommand;
+import xyz.ipiepiepie.chat.command.TryCommand;
 import xyz.ipiepiepie.chat.config.Config;
 import xyz.ipiepiepie.chat.listener.ChannelListener;
 import xyz.ipiepiepie.chat.listener.PingListener;
@@ -30,6 +32,8 @@ public class ChatMod implements ModInitializer {
 
 	private void registerCommands() {
 		if (CONFIG.isChannelsEnabled()) CommandManager.registerCommand(new ChannelCommand());
+		if (CONFIG.isTryEnabled()) CommandManager.registerCommand(new TryCommand());
+		if (CONFIG.isRollEnabled()) CommandManager.registerCommand(new RollCommand());
 	}
 
 	private void registerListeners() {

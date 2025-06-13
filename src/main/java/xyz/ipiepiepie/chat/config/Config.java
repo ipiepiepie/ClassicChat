@@ -19,7 +19,7 @@ public class Config {
 		toml.addCategory("Channel");
 		toml.addEntry("Channel.Enable", "enable channels feature", true);
 		toml.addEntry("Channel.Default", "default channel used when players type to chat", "local");
-		toml.addEntry("Channel.NoAudienceNotification", "should mod notify player if no one can hear them in limited by distance chat", true);
+		toml.addEntry("Channel.NobodyHeardNotification", "should mod notify players if nobody can hear them in limited by distance chat", true);
 		toml.addCategory("Channel.Global");
 		toml.addEntry("Channel.Global.Format", "§7[§1G§7]§r <%player%§r> %message%");
 		toml.addEntry("Channel.Global.Cooldown", "cooldown between sending messages in seconds", 1);
@@ -37,6 +37,13 @@ public class Config {
 		// nick category //
 		toml.addCategory("Nickname");
 		toml.addEntry("Nickname.RemoveItalic", "remove italic formatting for changed via '/nick' command nicknames", true);
+
+		// roleplay category //
+		toml.addCategory("Roleplay");
+		toml.addEntry("Roleplay.Channel", "set channel for roleplay actions", "local");
+		toml.addEntry("Roleplay.EnableMe", "enable /me command", true);
+		toml.addEntry("Roleplay.EnableTry", "enable /try command", true);
+		toml.addEntry("Roleplay.EnableRoll", "enable /roll command", true);
 
 		config = new TomlConfigHandler(modID, toml);
 	}
@@ -71,8 +78,8 @@ public class Config {
 		return config.getString("Channel.Default");
 	}
 
-	public boolean isNoAudienceNotificationEnabled() {
-		return config.getBoolean("Channel.NoAudienceNotification");
+	public boolean isNobodyHeardNotificationEnabled() {
+		return config.getBoolean("Channel.NobodyHeardNotification");
 	}
 
 	public List<String> getChannels() {
@@ -118,6 +125,24 @@ public class Config {
 			return config.getInt(path);
 		else
 			return -1;
+	}
+
+	// ROLEPLAY //
+
+	public String getRoleplayChannel() {
+		return config.getString("Roleplay.Channel");
+	}
+
+	public boolean isMeEnabled() {
+		return config.getBoolean("Roleplay.EnableMe");
+	}
+
+	public boolean isTryEnabled() {
+		return config.getBoolean("Roleplay.EnableTry");
+	}
+
+	public boolean isRollEnabled() {
+		return config.getBoolean("Roleplay.EnableRoll");
 	}
 
 }
