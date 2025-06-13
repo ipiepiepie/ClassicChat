@@ -53,6 +53,9 @@ public class ReplyCommand implements CommandManager.CommandRegistry {
 			if (receiver == null) {
 				sender.sendMessage(TextFormatting.RED + "Player is offline");
 			} else {
+				if (ChatMod.CONFIG.isColorCodeEnabled())
+					text = ChatManager.getInstance().translateCustomColorCodes(text);
+
 				// generate message for the current receiver
 				String message = ChatMod.CONFIG.getMessageFormat()
 					.replace("%sender%", TextFormatting.removeAllFormatting(sender.getDisplayName()))

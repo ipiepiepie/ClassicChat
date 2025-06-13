@@ -40,12 +40,15 @@ public class MessageCommand implements CommandManager.CommandRegistry {
 	 * {@literal /message <player> <message>}
 	 */
 	private void message(ArgumentBuilder<CommandSource, ArgumentBuilderLiteral<CommandSource>> builder) {
-		builder.then(ArgumentBuilderRequired.<CommandSource, EntitySelector>argument("targets", ArgumentTypeEntity.nickname()).then(ArgumentBuilderRequired.<CommandSource, String>argument("message", ArgumentTypeString.greedyString()).executes(context -> {
+		builder.then(ArgumentBuilderRequired.<CommandSource, EntitySelector>argument("targets", ArgumentTypeEntity.username()).then(ArgumentBuilderRequired.<CommandSource, String>argument("message", ArgumentTypeString.greedyString()).executes(context -> {
 			PlayerServer sender = (PlayerServer) context.getSource().getSender();
 			List<? extends Entity> targets = context.getArgument("targets", EntitySelector.class).get(context.getSource());
 			String text = context.getArgument("message", String.class);
 			// validate sender argument
 			if (sender == null) return 0;
+
+			if (ChatMod.CONFIG.isColorCodeEnabled())
+				text = ChatManager.getInstance().translateCustomColorCodes(text);
 
 			// iterate over entity selector
 			for (Entity entity : targets) {

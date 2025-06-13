@@ -40,10 +40,6 @@ public class Config {
 		toml.addEntry("Ping.Color", "color to highlight ping in chat (use 'reset' to get rid of color highlight)", "orange");
 		toml.addEntry("Ping.Sound", "sound, played to pinged player", "note.celesta");
 
-		// nick category //
-		toml.addCategory("Nickname");
-		toml.addEntry("Nickname.RemoveItalic", "remove italic formatting for changed via '/nick' command nicknames", true);
-
 		// roleplay category //
 		toml.addCategory("Roleplay");
 		toml.addEntry("Roleplay.Channel", "set channel for roleplay actions", "local");
@@ -51,7 +47,20 @@ public class Config {
 		toml.addEntry("Roleplay.EnableTry", "enable /try command", true);
 		toml.addEntry("Roleplay.EnableRoll", "enable /roll command", true);
 
+		// nick category //
+		toml.addCategory("Nickname");
+		toml.addEntry("Nickname.RemoveItalic", "remove italic formatting for changed via '/nick' command nicknames", true);
+
+		// color category //
+		toml.addCategory("ColorCode");
+		toml.addEntry("ColorCode.Enable", "enable custom color codes for chat", true);
+		toml.addEntry("ColorCode.Symbol", "custom color code for colors in chat", "&");
+		toml.addEntry("ColorCode.AdvancedCodes", "enable &{} color codes, read more at wiki", true);
+
 		config = new TomlConfigHandler(modID, toml);
+		// add newly added nodes
+		config.getRawParsed().addMissing(toml);
+		config.writeConfig();
 	}
 
 	// CHANNELS //
@@ -137,12 +146,6 @@ public class Config {
 		return config.getString("Ping.Color");
 	}
 
-	// NICKNAME //
-
-	public boolean shouldRemoveItalicFromNickname() {
-		return config.getBoolean("Nickname.RemoveItalic");
-	}
-
 	// ROLEPLAY //
 
 	public String getRoleplayChannel() {
@@ -159,6 +162,26 @@ public class Config {
 
 	public boolean isRollEnabled() {
 		return config.getBoolean("Roleplay.EnableRoll");
+	}
+
+	// NICKNAME //
+
+	public boolean shouldRemoveItalicFromNickname() {
+		return config.getBoolean("Nickname.RemoveItalic");
+	}
+
+	// COLOR //
+
+	public boolean isColorCodeEnabled() {
+		return config.getBoolean("ColorCode.Enable");
+	}
+
+	public boolean isAdvancedColorCodesEnabled() {
+		return config.getBoolean("ColorCode.AdvancedCodes");
+	}
+
+	public String getColorCodeSymbol() {
+		return config.getString("ColorCode.Symbol");
 	}
 
 }

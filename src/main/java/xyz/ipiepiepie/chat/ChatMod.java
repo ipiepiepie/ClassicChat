@@ -11,6 +11,7 @@ import xyz.ipiepiepie.chat.command.RollCommand;
 import xyz.ipiepiepie.chat.command.TryCommand;
 import xyz.ipiepiepie.chat.config.Config;
 import xyz.ipiepiepie.chat.listener.ChannelListener;
+import xyz.ipiepiepie.chat.listener.ColorsListener;
 import xyz.ipiepiepie.chat.listener.PingListener;
 
 public class ChatMod implements ModInitializer {
@@ -39,8 +40,9 @@ public class ChatMod implements ModInitializer {
 	}
 
 	private void registerListeners() {
-		ServerLibe.registerListener(new PingListener());
 		ServerLibe.registerListener(new ChannelListener());
+		ServerLibe.registerListener(new PingListener());
+		ServerLibe.registerListener(new ColorsListener());
 	}
 
 }

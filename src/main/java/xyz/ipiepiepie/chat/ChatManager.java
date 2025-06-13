@@ -5,6 +5,8 @@ import net.minecraft.core.net.command.TextFormatting;
 import xyz.ipiepiepie.chat.object.Channel;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ChatManager {
 	private static ChatManager instance;
@@ -65,6 +67,9 @@ public class ChatManager {
 	 * @return {@link Channel} for message.
 	 */
 	public Channel getChannel(Player player, String message) {
+		// check if there is no prefix
+		if (TextFormatting.removeAllFormatting(message).isEmpty()) return getChannel(player);
+		// get prefix
 		char prefix = TextFormatting.removeAllFormatting(message).charAt(0);
 
 		return channels.values()
@@ -96,6 +101,125 @@ public class ChatManager {
 
 	public UUID getLastConversation(Player player) {
 		return lastConversation.get(player.uuid);
+	}
+
+	/*=====================================* CUSTOM COLOR CODES *=====================================*/
+
+	/**
+	 * Translate custom color codes in message.
+	 * @param message message with potential color codes
+	 * @return message with translated color codes
+	 */
+	public String translateCustomColorCodes(String message) {
+		String result = ChatMod.CONFIG.isAdvancedColorCodesEnabled() ? translateAdvancedColorCodes(message) : message;
+		// fetch all custom color codes from message
+		Matcher matcher = Pattern.compile(Pattern.quote(ChatMod.CONFIG.getColorCodeSymbol()) + "[0123456789abcdefklmnor]").matcher(result);
+
+		// iterate over pings
+		while (matcher.find()) {
+			String color = matcher.group();
+
+			// replace color code
+			result = result.replaceFirst(color, "§" + color.substring(1));
+		}
+
+		return result;
+	}
+
+	/**
+	 * Translate advanced color codes (gradients at the moment).
+	 * @param message message with potential color codes
+	 * @return message with translated color codes
+	 */
+	public String translateAdvancedColorCodes(String message) {
+		String result = translateRainbowColorCodes(message);
+		// fetch all advanced color codes from message
+		Pattern regex = Pattern.compile(Pattern.quote(ChatMod.CONFIG.getColorCodeSymbol()) + "\\{[0123456789abcdefklmnor]+(?:,\\s*\\d+)?}");
+		Matcher matcher = regex.matcher(result);
+
+		// iterate over advanced color codes
+		while (matcher.find()) {
+			String code = matcher.group();
+			String pattern;
+			int period = 1;
+
+			// setup period if there is any comma
+			if (code.contains(",")) {
+				try {
+					String stepsStr = code.split(",\\s*")[1];
+					period = Integer.parseInt(stepsStr.substring(0, stepsStr.length() - 1));
+				} catch (NumberFormatException ignore) {}
+				pattern = code.split(",")[0].substring(2); // remove brace at the start
+			} else {
+				pattern = code.substring(2, code.length() - 1);
+			}
+
+			StringBuilder parser = new StringBuilder();
+			// color codes boundaries
+			int from = matcher.end();
+			int to = result.length();
+
+			// iterate over string characters and replace them with colors from pattern
+			int step = 0;
+			for (int i = from; i < result.length(); i++) {
+				// stop coloring string if we reached another color code
+				if (result.charAt(i) == '§' || result.charAt(i) == ChatMod.CONFIG.getColorCodeSymbol().charAt(0)) {
+					to = i;
+					break;
+				}
+
+				// skip whitespaces
+				if (result.charAt(i) == ' ') {
+					parser.append(" ");
+					continue;
+				}
+
+				// place color code before reached character
+				parser.append("§").append(pattern.charAt((step / period) % pattern.length())).append(result.charAt(i));
+
+				// increase step counter
+				step++;
+			}
+
+			// apply result
+			result = result.substring(0, from) + parser + result.substring(to);
+
+			// remove code from string
+			result = result.replaceFirst(regex.pattern(), "");
+			// add new result to matcher
+			matcher = regex.matcher(result);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Translate {@code &{rainbow}} color codes.
+	 * @param message message to find color codes
+	 * @return message with translated &{rainbow} color codes
+	 */
+	public String translateRainbowColorCodes(String message) {
+		String result = message;
+		// fetch all advanced color codes from message
+		Pattern regex = Pattern.compile(Pattern.quote(ChatMod.CONFIG.getColorCodeSymbol()) + "\\{rainbow+(?:,\\s*\\d+)?}");
+		Matcher matcher = regex.matcher(result);
+
+		while (matcher.find()) {
+			String code = matcher.group();
+			int period = 1;
+
+			//
+			if (code.contains(",")) {
+				try {
+					String stepsStr = code.split(",\\s*")[1];
+					period = Integer.parseInt(stepsStr.substring(0, stepsStr.length() - 1));
+				} catch (NumberFormatException ignore) {}
+			}
+
+			result = result.replaceFirst(regex.pattern(), String.format("&{e1453ba,%s}", period));
+		}
+
+		return result;
 	}
 
 	/*============================================* LOAD *============================================*/
