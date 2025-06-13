@@ -29,7 +29,6 @@ public class Config {
 		toml.addEntry("Channel.Local.Distance", "chat distance in blocks", 200);
 
 		// messages category //
-
 		toml.addCategory("Message");
 		toml.addEntry("Message.Enable", "enable custom /msg command", true);
 		toml.addEntry("Message.Format", "format of /msg messages", "§1[%sender% -> %receiver%]§r %message%");
@@ -91,7 +90,7 @@ public class Config {
 		// exclude some config options
 		result.remove("Enable");
 		result.remove("Default");
-		result.remove("NoAudienceNotification");
+		result.remove("NobodyHeardNotification");
 
 		return result;
 	}
