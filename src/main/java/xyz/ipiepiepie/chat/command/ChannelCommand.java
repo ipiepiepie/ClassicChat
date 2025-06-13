@@ -9,6 +9,7 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.core.net.command.CommandManager;
 import net.minecraft.core.net.command.CommandSource;
 import net.minecraft.core.net.command.TextFormatting;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.entity.player.PlayerServer;
 import xyz.ipiepiepie.chat.ChatManager;
 import xyz.ipiepiepie.chat.command.argument.ArgumentTypeChannel;
@@ -82,14 +83,23 @@ public class ChannelCommand implements CommandManager.CommandRegistry {
 			// validate sender argument
 			if (sender == null) return 0;
 
+			// prevent counting audiences if there is no other player on server
+			if (MinecraftServer.getInstance().playerList.playerEntities.size() <= 1) {
+				sender.sendMessage(TextFormatting.RED + "No one can hear you because you are the only one player on the server");
+				return Command.SINGLE_SUCCESS;
+			}
+
 			Channel channel = ChatManager.getInstance().getChannel(sender);
 			List<PlayerServer> audience = channel.getAudience(sender);
 
-			if (audience.size() <= 1) {
+			// don't count player
+			audience.remove(sender);
+
+			if (audience.isEmpty()) {
 				sender.sendMessage(TextFormatting.RED + "No one can hear you in the current channel");
 			} else {
 				sender.sendMessage(TextFormatting.GREEN + String.valueOf(audience.size()) + " players " + TextFormatting.LIME + "can hear you in the current channel: "
-					+ TextFormatting.GREEN + audience.stream().map(p -> TextFormatting.removeAllFormatting(p.getDisplayName())).collect(Collectors.joining(",")));
+					+ TextFormatting.GREEN + audience.stream().map(p -> TextFormatting.removeAllFormatting(p.getDisplayName())).collect(Collectors.joining(", ")));
 			}
 
 			return Command.SINGLE_SUCCESS;
